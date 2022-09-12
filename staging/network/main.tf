@@ -7,7 +7,7 @@ terraform {
   }
   backend "s3" {
     bucket = "teameet-terraform-remote-state"
-    key    = "staging/services/ecs"
+    key    = "staging/network"
     region = "ap-northeast-2"
     profile = "teameet"
   }
