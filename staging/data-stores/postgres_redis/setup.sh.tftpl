@@ -1,0 +1,14 @@
+#!/bin/bash
+
+cd /home/ubuntu
+
+sudo apt-get update && sudo apt-get install docker.io -y
+
+sudo docker run -d --name=db \
+    -e POSTGRES_PASSWORD=${postgres_password} \
+    -e POSTGRES_USER=${postgres_user} \
+    -e POSTGRES_DB=${postgres_db} \
+    -p 5432:5432 \
+    postgres:14
+
+sudo docker run -d --name=redis -p 6379:6379 redis:7
