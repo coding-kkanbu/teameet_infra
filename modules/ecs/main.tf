@@ -1,3 +1,8 @@
+provider "aws" {
+  region = var.aws_region
+  profile = var.aws_profile
+}
+
 resource "aws_ecs_cluster" "teameet" {
   name = var.stage == "" ? "teameet-cluster" : "teameet-cluster-${var.stage}"
 }
@@ -17,13 +22,13 @@ resource "aws_ecs_cluster_capacity_providers" "teameet" {
 resource "aws_appautoscaling_target" "teameet" {
   max_capacity = var.autoscaling_max_capacity
   min_capacity = var.autoscaling_min_capacity
-  resource_id = "service/${aws_ecs_cluster.thumb.name}/${aws_ecs_service.teameet.name}"
+  resource_id = "service/${aws_ecs_cluster.teameet.name}/${aws_ecs_service.teameet.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace = "ecs"
 }
 
 resource "aws_appautoscaling_policy" "teameet_memory_scale" {
-  name               = "${var.cluster_name}-memory-scale"
+  name               = "${aws_ecs_cluster.teameet.name}-memory-scale"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.teameet.resource_id
   scalable_dimension = aws_appautoscaling_target.teameet.scalable_dimension
@@ -39,7 +44,7 @@ resource "aws_appautoscaling_policy" "teameet_memory_scale" {
 }
 
 resource "aws_appautoscaling_policy" "teameet_request_count_scale" {
-  name               = "${var.cluster_name}-request-count-scale"
+  name               = "${aws_ecs_cluster.teameet.name}-request-count-scale"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.teameet.resource_id
   scalable_dimension = aws_appautoscaling_target.teameet.scalable_dimension
@@ -72,7 +77,7 @@ resource "aws_appautoscaling_policy" "teameet_request_cpu_scale" {
 }
 
 resource "aws_security_group" "teameet" {
-  vpc_id = var.vpc_id # TODO: create VPC
+  vpc_id = var.vpc_id
 
   ingress {
     from_port        = 80

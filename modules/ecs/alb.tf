@@ -2,7 +2,7 @@ resource "aws_alb" "teameet" {
   name               = var.stage == "" ? "teameet-alb" : "teameet-alb-${var.stage}"
   internal           = false
   load_balancer_type = "application"
-  subnets            = var.alb_subnets # TODO: create subnets
+  subnets            = var.public_subnets
   security_groups    = [aws_security_group.teameet.id]
 
   tags = {
@@ -10,31 +10,35 @@ resource "aws_alb" "teameet" {
   }
 }
 
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_alb.teameet.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = var.certificate_arn # TODO: create certificate
+# resource "aws_lb_listener" "https" {
+#   load_balancer_arn = aws_alb.teameet.arn
+#   port              = "443"
+#   protocol          = "HTTPS"
+#   ssl_policy        = "ELBSecurityPolicy-2016-08"
+#   certificate_arn   = var.certificate_arn # TODO: create certificate
 
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.teameet.arn
-  }
-}
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.teameet.arn
+#   }
+# }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_alb.teameet.arn
   port              = "80"
   protocol          = "HTTP"
 
+  # default_action {
+  #   type             = "redirect"
+  #   redirect {
+  #       protocol = "HTTPS"
+  #       port = 443
+  #       status_code = "HTTP_301"
+  #   }
+  # }
   default_action {
-    type             = "redirect"
-    redirect {
-        protocol = "HTTPS"
-        port = 443
-        status_code = "HTTP_301"
-    }
+    type = "forward"
+    target_group_arn = aws_lb_target_group.teameet.arn
   }
 }
 
@@ -43,7 +47,7 @@ resource "aws_lb_target_group" "teameet" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = var.vpc_id # TODO: create VPC
+  vpc_id      = var.vpc_id
 
   health_check {
     healthy_threshold   = "3"

@@ -1,3 +1,13 @@
+variable "aws_region" {
+  type = string
+  default = "ap-northeast-2"
+}
+
+variable "aws_profile" {
+  type = string
+  default = "default"
+}
+
 variable "stage" {
   type = string
   default = ""
@@ -19,19 +29,23 @@ variable "cpu_scaling_target_value" {
   default = 80
 }
 
-variable "certificate_arn" {
-  type = string
-}
+# variable "certificate_arn" {
+#   type = string
+# }
 
 variable "vpc_id" {
   type = string
 }
 
-variable "subnet_id" {
+variable "public_subnets" {
+  type = list(string)
+}
+
+variable "vuejs_image_url" {
   type = string
 }
 
-variable "teameet_image_url" {
+variable "django_image_url" {
   type = string
 }
 
@@ -43,6 +57,12 @@ variable "task_role_arn" {
   type = string
 }
 
-variable "alb_subnets" {
-  type = list(string)
+variable "autoscaling_max_capacity" {
+  type = number
+  default = 2
+}
+
+variable "autoscaling_min_capacity" {
+  type = number
+  default = 1
 }

@@ -1,40 +1,34 @@
-resource "aws_ecs_task_definition" "thumb_core" {
-  family = var.task_definition_family
+resource "aws_ecs_task_definition" "vue" {
+  family = var.stage == "" ? "vue-task" : "vue-task-${var.stage}"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 4096
-  memory                   = 8192
+  cpu                      = 1024
+  memory                   = 2048
   task_role_arn = var.task_role_arn
   
   execution_role_arn       = var.execution_role_arn
 
   container_definitions = jsonencode([
     {
-      name      = "teameet"
-      image     = var.teameet_image_url
+      name      = "vuejs"
+      image     = var.vuejs_image_url
       cpu       = 1024
       memory    = 2048
       essential = true
       portMappings = [
         {
-          containerPort = 8000
-          hostPort      = 8000
+          containerPort = 80
+          hostPort      = 80
         }
       ]
       logConfiguration : {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": aws_cloudwatch_log_group.teameet.name,
+          "awslogs-group": aws_cloudwatch_log_group.vuejs.name,
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
         }
       }
-      environment: [
-        {
-            "name": "PORT",
-            "value": "8000"
-        },
-    ]
     }
   ])
 
