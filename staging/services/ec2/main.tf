@@ -31,11 +31,15 @@ resource "aws_instance" "core" {
   user_data = templatefile("setup.sh.tftpl", {
       postgres_password = var.postgres_password,
       postgres_user = var.postgres_user,
-      postgres_db = var.postgres_db
+      postgres_db = var.postgres_db,
+      aws_account = var.aws_account,
+      AWS_ACCESS_KEY_ID = var.AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY = var.AWS_SECRET_ACCESS_KEY,
+      AWS_REGION = local.aws_region,
     })
 
   tags = {
-    Name = "datastores-stag"
+    Name = "app"
   }
 }
 

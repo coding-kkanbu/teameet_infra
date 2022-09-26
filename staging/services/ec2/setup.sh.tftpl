@@ -2,13 +2,25 @@
 
 cd /home/ubuntu
 
-sudo apt-get update && sudo apt-get install docker.io -y
+sudo apt-get update && sudo apt-get install docker.io unzip -y
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+mkdir /home/ubuntu/.aws/
+echo "[default]\nAWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}\nAWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" > /home/ubuntu/.aws/credentials
+echo "[default]\nregion=${AWS_REGION}" > /home/ubuntu/.aws/config
+
+export ECR_URL=${aws_account}.dkr.ecr.ap-northeast-2.amazonaws.com
+export DJANGO_IMAGE_URL="$ECR_URL/django:dev"
+export VUE_IMAGE_URL="$ECR_URL/vuejs:dev"
+
+aws ecr get-login-password --region ap-northeast-2 | sudo docker login --username AWS --password-stdin $ECR_URL
 
 sudo docker run -d --name=django \
     -e POSTGRES_PASSWORD=${postgres_password} \
     -e POSTGRES_USER=${postgres_user} \
     -e POSTGRES_DB=${postgres_db} \
     -p 8000 \
-    ${aws_account}.dkr.ecr.ap-northeast-2.amazonaws.com/django:dev
+    $DJANGO_IMAGE_URL
 
-sudo docker run -d --name=vuejs -p 80:80 ${aws_account}.dkr.ecr.ap-northeast-2.amazonaws.com/vuejs:dev
+sudo docker run -d --name=vuejs -p 80:80 --platform=linux/arm64/v8 $VUE_IMAGE_URL
