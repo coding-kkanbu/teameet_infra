@@ -45,6 +45,11 @@ resource "aws_instance" "core" {
   }
 }
 
+resource "aws_eip" "lb" {
+  instance = aws_instance.core.id
+  vpc      = true
+}
+
 locals {
   ubuntu_ami = "ami-058165de3b7202099" # x86
   aws_region = "ap-northeast-2"
