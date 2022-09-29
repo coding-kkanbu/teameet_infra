@@ -17,10 +17,12 @@ export VUE_IMAGE_URL="$ECR_URL/vuejs:dev"
 aws ecr get-login-password --region ap-northeast-2 | sudo docker login --username AWS --password-stdin $ECR_URL
 
 sudo docker run -d --name=django \
+    -e DATABASE_URL=${postgres_url} \
     -e POSTGRES_PASSWORD=${postgres_password} \
     -e POSTGRES_USER=${postgres_user} \
     -e POSTGRES_DB=${postgres_db} \
-    -p 8000 \
+    -e REDIS_URL=${redis_url} \
+    -p 8000:8000 \
     $DJANGO_IMAGE_URL
 
 sudo docker run -d --name=vuejs -p 80:80 --platform=linux/arm64/v8 $VUE_IMAGE_URL

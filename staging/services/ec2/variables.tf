@@ -19,6 +19,10 @@ variable "postgres_user" {
   type = string
 }
 
+variable "postgres_url" {
+  type = string
+}
+
 variable "AWS_ACCESS_KEY_ID" {
   type = string
 }
