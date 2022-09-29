@@ -33,6 +33,7 @@ resource "aws_instance" "core" {
       postgres_user = var.postgres_user,
       postgres_db = var.postgres_db,
       postgres_url = var.postgres_url,
+      redis_url = var.redis_url,
       aws_account = var.aws_account,
       AWS_ACCESS_KEY_ID = var.AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY = var.AWS_SECRET_ACCESS_KEY,

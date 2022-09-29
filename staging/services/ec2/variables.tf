@@ -23,6 +23,10 @@ variable "postgres_url" {
   type = string
 }
 
+variable "redis_url" {
+  type = string
+}
+
 variable "AWS_ACCESS_KEY_ID" {
   type = string
 }
